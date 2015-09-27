@@ -22,4 +22,18 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.0'
+    compile 'com.android.support:cardview-v7:23.0.0'
+    compile 'com.google.android.gms:play-services-gcm:7.8.0'
+    compile 'com.parse:parse-android:1.10.1'
+}
+
+def props = new Properties();
+props.load(new FileInputStream(rootProject.file("local.properties")));
+
+def PARSE_API_KEY = '"' + props.getProperty("pifaceplayer.parse.key") + '"';
+def PARSE_API_SECRET = '"' + props.getProperty("pifaceplayer.parse.secret") + '"';
+
+android.buildTypes.each { type ->
+    type.buildConfigField 'String', 'PARSE_API_KEY', PARSE_API_KEY
+    type.buildConfigField 'String', 'PARSE_API_SECRET', PARSE_API_SECRET
 }
