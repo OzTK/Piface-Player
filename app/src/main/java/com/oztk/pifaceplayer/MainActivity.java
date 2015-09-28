@@ -4,13 +4,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TcpServer.TcpCallback {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        TcpServer server = new TcpServer(6789);
+        server.start(this);
     }
 
     @Override
@@ -33,5 +37,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void receive(String data) {
+        Toast.makeText(this, data, Toast.LENGTH_LONG).show();
     }
 }
