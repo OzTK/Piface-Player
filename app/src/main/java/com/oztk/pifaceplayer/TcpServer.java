@@ -20,8 +20,9 @@ public class TcpServer implements Runnable {
 
     private int port;
     private Thread serverThread;
-    private boolean stop;
+    private ServerSocket socket;
     private TcpCallback callback;
+    private boolean stop;
 
     public TcpServer(int port) {
         this.port = port;
@@ -29,19 +30,30 @@ public class TcpServer implements Runnable {
 
     public void start(@NonNull TcpCallback callback) {
         this.callback = callback;
-        serverThread = new Thread(this);
-        serverThread.start();
+        try {
+            socket = new ServerSocket(port);
+            serverThread = new Thread(this);
+            serverThread.start();
+        } catch (IOException e) {
+            Log.e(TAG, "Failed to instantiate socket: " + e.getMessage());
+            if (this.callback != null) {
+                callback.faulted();
+            }
+        }
     }
 
     public void stop() {
-        stop = true;
+        try {
+            stop = true;
+            socket.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Could not close socket: " + e.getMessage());
+        }
     }
 
     @Override
     public void run() {
         try {
-            ServerSocket socket = new ServerSocket(port);
-
             while (!stop) {
                 Socket connectionSocket = socket.accept();
                 BufferedReader requestReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
@@ -65,10 +77,14 @@ public class TcpServer implements Runnable {
             serverThread = null;
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
+            if (callback != null) {
+                callback.faulted();
+            }
         }
     }
 
     public interface TcpCallback {
         void receive(String data);
+        void faulted();
     }
 }
