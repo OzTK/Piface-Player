@@ -28,6 +28,7 @@ public class TcpServer implements Runnable {
     }
 
     public void start(@NonNull TcpCallback callback) {
+        this.callback = callback;
         serverThread = new Thread(this);
         serverThread.start();
     }
@@ -46,13 +47,16 @@ public class TcpServer implements Runnable {
                 BufferedReader requestReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
                 final String requestData = requestReader.readLine();
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.receive(requestData);
-                    }
-                });
+
+                if (callback != null) {
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.receive(requestData);
+                        }
+                    });
+                }
 
                 requestReader.close();
             }
