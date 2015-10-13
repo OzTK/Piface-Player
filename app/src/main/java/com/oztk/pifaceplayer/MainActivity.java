@@ -165,7 +165,6 @@ public class MainActivity extends AppCompatActivity implements TcpServer.TcpCall
     }
 
     private String buildOutputFilePath(int soundIndex) {
-
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_NOTIFICATIONS).getAbsolutePath()
                 + OUTPUT_BASE_FILENAME
                 + soundIndex
