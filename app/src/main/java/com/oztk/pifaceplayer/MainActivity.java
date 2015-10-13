@@ -13,6 +13,7 @@ import android.widget.ToggleButton;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 
 public class MainActivity extends AppCompatActivity implements TcpServer.TcpCallback,
         CompoundButton.OnCheckedChangeListener,
@@ -54,7 +55,19 @@ public class MainActivity extends AppCompatActivity implements TcpServer.TcpCall
 
     @Override
     public void receive(String data) {
-        Toast.makeText(this, data, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, String.format("Playing sound %s", data), Toast.LENGTH_LONG).show();
+        String error = null;
+        try {
+            startPlaying(Integer.parseInt(data));
+        } catch (IOException e) {
+            error = "Error reading the sound file";
+        } catch (NumberFormatException e) {
+            error = "Malformed data received from Pi";
+        } finally {
+            if (error != null) {
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override
