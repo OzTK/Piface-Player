@@ -1,8 +1,10 @@
 package com.oztk.pifaceplayer;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,6 +21,7 @@ public class MainActivity extends AppCompatActivity implements TcpServer.TcpCall
         CompoundButton.OnCheckedChangeListener,
         MediaRecorder.OnInfoListener,
         MediaPlayer.OnCompletionListener, View.OnClickListener {
+    private static final String TAG = "com.oztk.pifaceplayer.MainActivity";
     private static final int MAX_RETRIES = 3;
     private static final String OUTPUT_BASE_FILENAME = "halloween_voice";
     private static final String OUTPUT_FILE_EXTENSION = ".3gp";
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements TcpServer.TcpCall
     private int connectionRetries = 0;
     private MediaRecorder recorder;
     private MediaPlayer player;
+    private PowerManager.WakeLock wakeLock;
 
     private ToggleButton mBtnRecord1;
     private ImageButton mBtnPlay1;
@@ -38,7 +42,6 @@ public class MainActivity extends AppCompatActivity implements TcpServer.TcpCall
         setContentView(R.layout.activity_main);
 
         server = new TcpServer(6789);
-        server.start(this);
 
         mBtnRecord1 = (ToggleButton) findViewById(R.id.activity_main_btn_recording1);
         mBtnPlay1 = (ImageButton) findViewById(R.id.activity_main_btn_play1);
@@ -51,6 +54,18 @@ public class MainActivity extends AppCompatActivity implements TcpServer.TcpCall
     protected void onStop() {
         super.onStop();
         server.stop();
+//        wakeLock.release();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+//        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+//        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+//        wakeLock.acquire();
+
+        server.start(this);
     }
 
     @Override

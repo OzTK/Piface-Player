@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * @author Paul Duguet
@@ -22,7 +23,6 @@ public class TcpServer implements Runnable {
     private Thread serverThread;
     private ServerSocket socket;
     private TcpCallback callback;
-    private boolean stop;
 
     public TcpServer(int port) {
         this.port = port;
@@ -44,7 +44,7 @@ public class TcpServer implements Runnable {
 
     public void stop() {
         try {
-            stop = true;
+            serverThread.interrupt();
             socket.close();
         } catch (IOException e) {
             Log.e(TAG, "Could not close socket: " + e.getMessage());
@@ -54,7 +54,7 @@ public class TcpServer implements Runnable {
     @Override
     public void run() {
         try {
-            while (!stop) {
+            while (!serverThread.isInterrupted()) {
                 Socket connectionSocket = socket.accept();
                 BufferedReader requestReader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
@@ -72,14 +72,15 @@ public class TcpServer implements Runnable {
 
                 requestReader.close();
             }
-
-            callback = null;
-            serverThread = null;
-        } catch (IOException e) {
+        } catch (SocketException e) {
             Log.e(TAG, e.getMessage());
+        } catch (IOException e) {
             if (callback != null) {
                 callback.faulted();
             }
+        } finally {
+            callback = null;
+            serverThread = null;
         }
     }
 
