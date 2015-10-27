@@ -1,6 +1,5 @@
 package com.oztk.pifaceplayer;
 
-import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
@@ -15,7 +14,6 @@ import android.widget.ToggleButton;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 
 public class MainActivity extends AppCompatActivity implements TcpServer.TcpCallback,
         CompoundButton.OnCheckedChangeListener,
@@ -35,6 +33,12 @@ public class MainActivity extends AppCompatActivity implements TcpServer.TcpCall
 
     private ToggleButton mBtnRecord1;
     private ImageButton mBtnPlay1;
+    private ToggleButton mBtnRecord2;
+    private ImageButton mBtnPlay2;
+    private ToggleButton mBtnRecord3;
+    private ImageButton mBtnPlay3;
+    private ToggleButton mBtnRecord4;
+    private ImageButton mBtnPlay4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +49,21 @@ public class MainActivity extends AppCompatActivity implements TcpServer.TcpCall
 
         mBtnRecord1 = (ToggleButton) findViewById(R.id.activity_main_btn_recording1);
         mBtnPlay1 = (ImageButton) findViewById(R.id.activity_main_btn_play1);
+        mBtnRecord2 = (ToggleButton) findViewById(R.id.activity_main_btn_recording2);
+        mBtnPlay2 = (ImageButton) findViewById(R.id.activity_main_btn_play2);
+        mBtnRecord3 = (ToggleButton) findViewById(R.id.activity_main_btn_recording3);
+        mBtnPlay3 = (ImageButton) findViewById(R.id.activity_main_btn_play3);
+        mBtnRecord4 = (ToggleButton) findViewById(R.id.activity_main_btn_recording4);
+        mBtnPlay4 = (ImageButton) findViewById(R.id.activity_main_btn_play4);
 
         mBtnRecord1.setOnCheckedChangeListener(this);
         mBtnPlay1.setOnClickListener(this);
+        mBtnRecord2.setOnCheckedChangeListener(this);
+        mBtnPlay2.setOnClickListener(this);
+        mBtnRecord3.setOnCheckedChangeListener(this);
+        mBtnPlay3.setOnClickListener(this);
+        mBtnRecord4.setOnCheckedChangeListener(this);
+        mBtnPlay4.setOnClickListener(this);
     }
 
     @Override
@@ -95,16 +111,18 @@ public class MainActivity extends AppCompatActivity implements TcpServer.TcpCall
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (!isChecked) {
-            stopRecording();
-        } else {
-            int index = Integer.parseInt(buttonView.getTag().toString());
-            try {
+        try {
+            if (!isChecked) {
+                stopRecording();
+            } else {
+                int index = Integer.parseInt(buttonView.getTag().toString());
                 startRecording(index);
-            } catch (IOException e) {
-                recorder = null;
-                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
             }
+        } catch (IOException e) {
+            recorder = null;
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        } catch (RuntimeException e) {
+            Toast.makeText(this, "Stop failed", Toast.LENGTH_LONG).show();
         }
     }
 

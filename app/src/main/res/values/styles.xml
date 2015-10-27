@@ -1,8 +1,10 @@
 <resources>
 
-    <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+
     </style>
 
+    <style name="CV" parent="CardView">
+        <item name="android:layout_margin">@dimen/activity_horizontal_margin</item>
+    </style>
 </resources>
